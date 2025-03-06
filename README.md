@@ -2,7 +2,7 @@
 
 A smart (and opinionated) tmux session manager that sets up project-specific sessions automatically.
 
-Think `tmuxp` but without predefined YAML configuration.
+Think [tmuxp](https://tmuxp.git-pull.com/) but without predefined YAML configuration. Powered by [tmuxp](https://tmuxp.git-pull.com/).
 
 ```
 ┌───────────────────────────┬───────────────────────────┐
@@ -21,7 +21,7 @@ Think `tmuxp` but without predefined YAML configuration.
 └───────────────────────────┴───────────────────────────┘
 ```
 
-## Features
+## features
 
 - Fuzzy find your projects with [fzf](https://github.com/junegunn/fzf) and [zoxide](https://github.com/ajeetdsouza/zoxide)
 - Automatic workspace detection for npm, pnpm, yarn and Cargo
@@ -29,18 +29,18 @@ Think `tmuxp` but without predefined YAML configuration.
 - Automatically runs `dev` script in a pane when available
 - Handles Python virtual environments
 
-## Installation
+## installation
 
 ```sh
-pip install git+https://github.com/raine/tmux-bro.git
+pipx install git+https://github.com/raine/tmux-bro.git
 ```
 
-## Dependencies
+## dependencies
 
 - [fzf](https://github.com/junegunn/fzf) for fuzzy finding
 - [zoxide](https://github.com/ajeetdsouza/zoxide) (optional) for directory navigation
 
-## Setup
+## setup
 
 ### tmux popup bind (optional but recommended)
 
@@ -50,7 +50,7 @@ Set up a mapping in tmux configuration that runs `tmux-bro` in a popup:
 bind C-t display-popup -E "tmux-bro"
 ```
 
-### Project discovery
+### project discovery
 
 tmux-bro uses two approaches to discover your projects:
 
@@ -75,7 +75,7 @@ tmux-bro uses two approaches to discover your projects:
 
 Both approaches integrate with fzf to provide a fast fuzzy-search interface for selecting projects.
 
-## Usage
+## usage
 
 Hit the tmux popup mapping or run `tmux-bro`.
 
@@ -85,12 +85,23 @@ This will:
 2. Detect the workspace type (npm, pnpm, Cargo, or plain)
 3. Create a tmux session with appropriate layout for the project
 
-### Environment Variables
+## configuration
 
-- `EDITOR`: Your preferred editor
-- `TMUX_BRO_PROJECTS_DIR`: Fallback directory to search for projects when zoxide is not available
+As of now, there is not much configuration — it's designed to adapt to
+your workflow out of the box. I've built this tool for my own use, and my usage
+patterns will shape whether configuration options are needed in the future. For
+now, it relies on sensible defaults and the following environment variables to
+customize behavior:
 
-## Example
+- **`EDITOR`**: Specifies your preferred editor (e.g., `vim`, `nvim`, or `code`).
+- **`TMUX_BRO_PROJECTS_DIR`**: Defines the fallback directory for project
+  discovery if [zoxide](https://github.com/ajeetdsouza/zoxide) isn’t installed.
+  Set this to where you store your projects (e.g., `$HOME/projects`).
+
+If my own needs evolve — or compelling feedback is given — more customization
+options might be added later. For now, it’s lean and opinionated by design.
+
+## example
 
 When used with a npm monorepo, tmux bro will:
 
@@ -101,6 +112,10 @@ When used with a npm monorepo, tmux bro will:
    - A dev script running (if the package has one)
    - A clean shell
 
-## License
+## license
 
 MIT
+
+## see also
+
+- [tmux-inspect](https://github.com/raine/tmux-inspect)
