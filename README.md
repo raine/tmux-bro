@@ -1,5 +1,22 @@
 # tmux-bro
 
+```
+┌───────────────────────────┬───────────────────────────┐
+│ // editor.js              │ $ npm run dev             │
+│ function main() {         │ > project@1.0.0 dev       │
+│   console.log("Hello");   │ > vite                    │
+│ }                         │                           │
+│                           │ VITE v4.3.9 ready         │
+│                           │ ➜ localhost:3000/         │
+│      ┌──────────────┐     ├───────────────────────────┤
+│      │   tmux-bro   │     │ $                         │
+│      └──────────────┘     │                           │
+│                           │                           │
+│                           │                           │
+│                           │                           │
+└───────────────────────────┴───────────────────────────┘
+```
+
 A smart (and opinionated) tmux session manager that sets up project-specific sessions automatically.
 
 Think `tmuxp` but without predefined YAML configuration.
@@ -25,7 +42,7 @@ pip install git+https://github.com/raine/tmux-bro.git
 
 ## Setup
 
-### Tmux popup bind (optional but recommended)
+### tmux popup bind (optional but recommended)
 
 Set up a mapping in tmux configuration that runs `tmux-bro` in a popup:
 
@@ -59,6 +76,8 @@ tmux-bro uses two approaches to discover your projects:
 Both approaches integrate with fzf to provide a fast fuzzy-search interface for selecting projects.
 
 ## Usage
+
+Hit the tmux popup mapping or run `tmux-bro`.
 
 This will:
 
