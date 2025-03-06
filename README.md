@@ -1,13 +1,17 @@
 # tmux-bro
 
+A smart (and opinionated) tmux session manager that sets up project-specific sessions automatically.
+
+Think `tmuxp` but without predefined YAML configuration.
+
 ```
 ┌───────────────────────────┬───────────────────────────┐
-│ // editor.js              │ $ npm run dev             │
-│ function main() {         │ > project@1.0.0 dev       │
-│   console.log("Hello");   │ > vite                    │
-│ }                         │                           │
-│                           │ VITE v4.3.9 ready         │
-│                           │ ➜ localhost:3000/         │
+│1| function main() {       │ $ npm run dev             │
+│2|   console.log("Hello"); │ > project@1.0.0 dev       │
+│3| }                       │ > vite                    │
+│4|                         │                           │
+│5|                         │ VITE v4.3.9 ready         │
+│6|                         │ ➜ localhost:3000/         │
 │      ┌──────────────┐     ├───────────────────────────┤
 │      │   tmux-bro   │     │ $                         │
 │      └──────────────┘     │                           │
@@ -16,10 +20,6 @@
 │                           │                           │
 └───────────────────────────┴───────────────────────────┘
 ```
-
-A smart (and opinionated) tmux session manager that sets up project-specific sessions automatically.
-
-Think `tmuxp` but without predefined YAML configuration.
 
 ## Features
 
