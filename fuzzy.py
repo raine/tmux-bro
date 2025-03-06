@@ -14,7 +14,7 @@ def run_fuzzy_finder():
         except (subprocess.SubprocessError, FileNotFoundError):
             print("Error: fzf is not installed or not in PATH")
             input("Press Enter to continue...")
-            return None, None
+            return None
 
         # Try to use zoxide if available
         try:
@@ -29,7 +29,7 @@ def run_fuzzy_finder():
                     "Error: zoxide is not installed or TMUX_BRO_PROJECTS_DIR is not set"
                 )
                 input("Press Enter to continue...")
-                return None, None
+                return None
 
             process = subprocess.Popen(
                 f"find {projects_dir} -type d -maxdepth 1 | fzf",
@@ -41,13 +41,13 @@ def run_fuzzy_finder():
         output = process.communicate()[0].strip().split("\n")
 
         if not output or not output[0]:
-            return None, None
+            return None
 
         # Parse the output based on whether a key was pressed
         if len(output) == 1:
-            return output[0], ""  # No key pressed, just selection
+            return output[0]
         else:
-            return output[1], output[0]  # Key pressed + selection
+            return output[1]
 
     except Exception as e:
         print(f"Error: {e}")
