@@ -1,7 +1,7 @@
 from libtmux import Server
 from tmuxp.workspace.builder import WorkspaceBuilder
 import os
-from workspace import detect_workspace, has_dev_script, detect_package_manager
+from .workspace import detect_workspace, has_dev_script, detect_package_manager
 
 
 def build_session_config(directory):

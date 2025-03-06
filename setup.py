@@ -25,7 +25,7 @@ setup(
     install_requires=requirements,
     entry_points={
         "console_scripts": [
-            "tmux-bro=main:main",
+            "tmux-bro=tmux_bro.main:main",
         ],
     },
 )

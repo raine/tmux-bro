@@ -1,6 +1,6 @@
 import sys
-import tmux
-from fuzzy import run_fuzzy_finder
+from . import tmux
+from .fuzzy import run_fuzzy_finder
 
 
 def main():
