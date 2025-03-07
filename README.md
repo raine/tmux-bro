@@ -56,8 +56,8 @@ tmux-bro uses two approaches to discover your projects:
 
 1. **zoxide** (recommended): If you have
    [zoxide](https://github.com/ajeetdsouza/zoxide) installed, tmux-bro will use
-   it to find your most frequently accessed directories. This leverages your
-   existing navigation habits without requiring additional configuration.
+   it to find your accessed directories and feed them to fzf. This leverages
+   your existing navigation habits without requiring additional configuration.
 
 2. **TMUX_BRO_PROJECTS_DIR** (fallback): If zoxide is not available, tmux-bro
    will look for projects in the directory specified by the
