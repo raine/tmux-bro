@@ -4,73 +4,107 @@ import os
 from .workspace import detect_workspace, has_dev_script, detect_package_manager
 
 
+def _get_venv_source_cmd(directory):
+    """Return venv source command if a venv exists in the directory."""
+    venv_activate_path = os.path.join(directory, "venv", "bin", "activate")
+    if os.path.isfile(venv_activate_path):
+        return {"cmd": f"source {venv_activate_path}"}
+    return None
+
+
+def _create_editor_pane(directory, editor):
+    """Create editor pane with venv activation if needed."""
+    commands = []
+    venv_cmd = _get_venv_source_cmd(directory)
+    if venv_cmd:
+        commands.append(venv_cmd)
+    commands.append({"cmd": editor})
+    return {"shell_command": commands}
+
+
+def _create_shell_pane(directory):
+    """Create shell pane with venv activation if needed."""
+    commands = []
+    venv_cmd = _get_venv_source_cmd(directory)
+    if venv_cmd:
+        commands.append(venv_cmd)
+    return {"shell_command": commands}
+
+
+def _create_dev_pane(directory, pkg_manager):
+    """Create dev script pane with appropriate command."""
+    commands = []
+    venv_cmd = _get_venv_source_cmd(directory)
+    if venv_cmd:
+        commands.append(venv_cmd)
+
+    if pkg_manager == "npm":
+        commands.append({"cmd": "npm run dev"})
+    else:
+        commands.append({"cmd": f"{pkg_manager} dev"})
+
+    return {"shell_command": commands}
+
+
+def _create_window_config(directory, window_name=None):
+    """Create a standard window configuration."""
+    config = {
+        "layout": "main-vertical",
+        "start_directory": directory,
+        "options": {"main-pane-width": "50%"},
+    }
+
+    if window_name is not None:
+        config["window_name"] = window_name
+
+    return config
+
+
 def build_session_config(directory):
     editor = os.environ.get("EDITOR", "vim")
     session_name = os.path.basename(directory)
     package_dirs = detect_workspace(directory)
     pkg_manager = detect_package_manager(directory)
 
-    if package_dirs:
-        windows = []
+    windows = []
 
+    if package_dirs:
+        # Multi-package workspace
         for package_dir in package_dirs:
             package_name = os.path.basename(package_dir)
             has_dev = has_dev_script(package_dir)
 
             panes = [
-                {"shell_command": [{"cmd": editor}]},
-                {"shell_command": []},  # Empty shell pane
+                _create_editor_pane(package_dir, editor),
+                _create_shell_pane(package_dir),
             ]
 
             if has_dev:
-                if pkg_manager == "npm":
-                    panes.insert(1, {"shell_command": [{"cmd": "npm run dev"}]})
-                else:
-                    panes.insert(1, {"shell_command": [{"cmd": f"{pkg_manager} dev"}]})
+                panes.insert(1, _create_dev_pane(package_dir, pkg_manager))
 
-            windows.append(
-                {
-                    "window_name": package_name,
-                    "layout": "main-vertical",
-                    "start_directory": package_dir,
-                    "options": {"main-pane-width": "50%"},
-                    "panes": panes,
-                }
-            )
-
-        return {
-            "session_name": session_name,
-            "windows": windows,
-        }
+            window = _create_window_config(package_dir, package_name)
+            window["panes"] = panes
+            windows.append(window)
     else:
-        venv_activate_path = os.path.join(directory, "venv", "bin", "activate")
-        has_venv = os.path.isfile(venv_activate_path)
+        # Single directory
+        has_dev = has_dev_script(directory)
 
-        editor_commands = []
-        if has_venv:
-            editor_commands.append({"cmd": f"source {venv_activate_path}"})
+        panes = [
+            _create_editor_pane(directory, editor),
+            _create_shell_pane(directory),
+        ]
 
-        editor_commands.append({"cmd": editor})
+        if has_dev:
+            panes.insert(1, _create_dev_pane(directory, pkg_manager))
 
-        return {
-            "session_name": session_name,
-            "windows": [
-                {
-                    # No window_name specified, so it will show the running process
-                    "layout": "main-vertical",
-                    "start_directory": directory,
-                    "options": {"main-pane-width": "50%"},
-                    "panes": [
-                        {"shell_command": editor_commands},
-                        {
-                            "shell_command": has_venv
-                            and [{"cmd": f"source {venv_activate_path}"}]
-                            or []
-                        },
-                    ],
-                }
-            ],
-        }
+        window = _create_window_config(directory)
+        window["panes"] = panes
+        windows.append(window)
+
+    return {
+        "session_name": session_name,
+        "windows": windows,
+    }
 
 
 def create_tmux_session(config):
