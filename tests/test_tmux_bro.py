@@ -4,6 +4,7 @@ import os
 import pytest
 import toml
 import yaml
+from unittest.mock import patch
 
 from tmux_bro.tmux import build_session_config
 
@@ -377,3 +378,27 @@ def test_npm_project_no_dev_script(npm_project_dir_no_dev_script):
     }
 
     assert expected == config
+
+
+def test_custom_layout_from_config(simple_dir):
+    """Test that layout is read from global config if it exists."""
+    # Mock the global config to return a custom layout
+    with patch("tmux_bro.tmux.load_global_config") as mock_config:
+        mock_config.return_value = {"layout": "tiled"}
+
+        config = build_session_config(str(simple_dir))
+
+        # Check that the layout from config is used
+        assert config["windows"][0]["layout"] == "tiled"
+
+
+def test_default_layout_when_no_config(simple_dir):
+    """Test that default layout is used when no layout in config."""
+    # Mock the global config to return empty dict (no layout specified)
+    with patch("tmux_bro.tmux.load_global_config") as mock_config:
+        mock_config.return_value = {}
+
+        config = build_session_config(str(simple_dir))
+
+        # Check that the default layout is used
+        assert config["windows"][0]["layout"] == "main-vertical"

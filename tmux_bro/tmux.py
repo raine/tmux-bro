@@ -2,6 +2,7 @@ from libtmux import Server
 from tmuxp.workspace.builder import WorkspaceBuilder
 import os
 from .workspace import detect_workspace, has_dev_script, detect_package_manager
+from .config import load_global_config
 
 
 def _get_venv_source_cmd(directory):
@@ -46,10 +47,18 @@ def _create_dev_pane(directory, pkg_manager):
     return {"shell_command": commands}
 
 
+DEFAULT_LAYOUT = "main-vertical"
+
+
 def _create_window_config(directory, window_name=None):
     """Create a standard window configuration."""
+    global_config = load_global_config()
+
+    # Get layout from config or use default
+    layout = global_config.get("layout", DEFAULT_LAYOUT)
+
     config = {
-        "layout": "main-vertical",
+        "layout": layout,
         "start_directory": directory,
         "options": {"main-pane-width": "50%"},
     }

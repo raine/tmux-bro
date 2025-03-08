@@ -88,11 +88,14 @@ patterns will shape whether configuration options are needed in the future. For
 now, it relies on sensible defaults and the following:
 
 - **`EDITOR`** environment variable: Specifies your preferred editor (e.g., `vim`,
-`nvim`, or `code`).
+  `nvim`, or `code`).
 - **Global config file** at `~/.config/tmux-bro.yaml` with the following options:
   - `projects_dir`: Defines the fallback directory for project discovery if
     [zoxide](https://github.com/ajeetdsouza/zoxide) isn't installed.
     Set this to where you store your projects (e.g., `$HOME/projects`).
+  - `layout`: Sets the default tmux layout for all sessions. Valid options include
+    `main-vertical`, `main-horizontal`, `tiled`, `even-horizontal`, `even-vertical`.
+    If not specified, `main-vertical` is used as the default.
 
 If my own needs evolve — or compelling feedback is given — more customization
 options might be added later. For now, it’s lean and opinionated by design.
