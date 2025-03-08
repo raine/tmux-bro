@@ -8,6 +8,7 @@ def build_session_config(directory):
     editor = os.environ.get("EDITOR", "vim")
     session_name = os.path.basename(directory)
     package_dirs = detect_workspace(directory)
+    pkg_manager = detect_package_manager(directory)
 
     if package_dirs:
         windows = []
@@ -15,7 +16,6 @@ def build_session_config(directory):
         for package_dir in package_dirs:
             package_name = os.path.basename(package_dir)
             has_dev = has_dev_script(package_dir)
-            pkg_manager = detect_package_manager(package_dir)
 
             panes = [
                 {"shell_command": [{"cmd": editor}]},
