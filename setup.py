@@ -8,7 +8,7 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
 
 setup(
     name="tmux-bro",
-    version="0.1.0",
+    version="0.1.1",
     author="raine",
     author_email="raine.virta@gmail.com",
     description="A smart tmux session manager that sets up project-specific sessions automatically",
