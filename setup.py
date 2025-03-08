@@ -10,7 +10,7 @@ setup(
     name="tmux-bro",
     version="0.1.0",
     author="raine",
-    author_email="raine.virta@gmail.com",  # Replace with actual email
+    author_email="raine.virta@gmail.com",
     description="A smart tmux session manager that sets up project-specific sessions automatically",
     long_description=long_description,
     long_description_content_type="text/markdown",
