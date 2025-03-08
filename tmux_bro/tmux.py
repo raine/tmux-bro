@@ -78,7 +78,6 @@ def create_tmux_session(config):
 
     builder = WorkspaceBuilder(session_config=config, server=server)
     builder.build()
-
     session = builder.session
 
     if "TMUX" in os.environ:
@@ -91,3 +90,9 @@ def create_tmux_session(config):
         session.attach_session()
 
     return session
+
+
+def find_tmux_session(session_name):
+    """Find an existing tmux session by name."""
+    server = Server()
+    return server.find_where({"session_name": session_name})
