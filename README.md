@@ -96,6 +96,8 @@ now, it relies on sensible defaults and the following:
   - `layout`: Sets the default tmux layout for all sessions. Valid options include
     `main-vertical`, `main-horizontal`, `tiled`, `even-horizontal`, `even-vertical`.
     If not specified, `main-vertical` is used as the default.
+  - `main_pane_width`: Sets the width of the main pane for vertical layouts (default: "50%").
+  - `main_pane_height`: Sets the height of the main pane for horizontal layouts (default: "50%").
 
 If my own needs evolve — or compelling feedback is given — more customization
 options might be added later. For now, it’s lean and opinionated by design.

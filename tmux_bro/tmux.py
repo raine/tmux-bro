@@ -48,19 +48,33 @@ def _create_dev_pane(directory, pkg_manager):
 
 
 DEFAULT_LAYOUT = "main-vertical"
+DEFAULT_MAIN_PANE_WIDTH = "50%"
+DEFAULT_MAIN_PANE_HEIGHT = "50%"
 
 
 def _create_window_config(directory, window_name=None):
     """Create a standard window configuration."""
     global_config = load_global_config()
 
-    # Get layout from config or use default
+    # Get layout and pane dimensions from config or use defaults
     layout = global_config.get("layout", DEFAULT_LAYOUT)
+    main_pane_width = global_config.get("main_pane_width", DEFAULT_MAIN_PANE_WIDTH)
+    main_pane_height = global_config.get("main_pane_height", DEFAULT_MAIN_PANE_HEIGHT)
+
+    # Set options based on layout type
+    options = {}
+    if layout in ["main-vertical", "even-vertical"]:
+        options["main-pane-width"] = main_pane_width
+    elif layout in ["main-horizontal", "even-horizontal"]:
+        options["main-pane-height"] = main_pane_height
+    else:  # For tiled and other layouts
+        options["main-pane-width"] = main_pane_width
+        options["main-pane-height"] = main_pane_height
 
     config = {
         "layout": layout,
         "start_directory": directory,
-        "options": {"main-pane-width": "50%"},
+        "options": options,
     }
 
     if window_name is not None:

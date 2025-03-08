@@ -21,6 +21,15 @@ def editor_env():
         del os.environ["EDITOR"]
 
 
+@pytest.fixture(autouse=True)
+def mock_global_config():
+    """Mock the global config to prevent real config from affecting tests."""
+    with patch("tmux_bro.tmux.load_global_config") as mock_config:
+        # Default to empty config
+        mock_config.return_value = {}
+        yield mock_config
+
+
 @pytest.fixture
 def simple_dir(tmp_path):
     """Create a simple project directory."""
@@ -380,25 +389,49 @@ def test_npm_project_no_dev_script(npm_project_dir_no_dev_script):
     assert expected == config
 
 
-def test_custom_layout_from_config(simple_dir):
+def test_custom_layout_from_config(simple_dir, mock_global_config):
     """Test that layout is read from global config if it exists."""
-    # Mock the global config to return a custom layout
-    with patch("tmux_bro.tmux.load_global_config") as mock_config:
-        mock_config.return_value = {"layout": "tiled"}
+    # Set the mock to return a custom layout
+    mock_global_config.return_value = {"layout": "tiled"}
+    config = build_session_config(str(simple_dir))
 
-        config = build_session_config(str(simple_dir))
-
-        # Check that the layout from config is used
-        assert config["windows"][0]["layout"] == "tiled"
+    # Check that the layout from config is used
+    assert config["windows"][0]["layout"] == "tiled"
 
 
 def test_default_layout_when_no_config(simple_dir):
     """Test that default layout is used when no layout in config."""
-    # Mock the global config to return empty dict (no layout specified)
-    with patch("tmux_bro.tmux.load_global_config") as mock_config:
-        mock_config.return_value = {}
+    config = build_session_config(str(simple_dir))
 
-        config = build_session_config(str(simple_dir))
+    # Check that the default layout is used
+    assert config["windows"][0]["layout"] == "main-vertical"
 
-        # Check that the default layout is used
-        assert config["windows"][0]["layout"] == "main-vertical"
+
+def test_custom_pane_dimensions(simple_dir, mock_global_config):
+    """Test that pane dimensions are read from global config."""
+    # Set the mock to return custom pane dimensions
+    mock_global_config.return_value = {
+        "layout": "main-vertical",
+        "main_pane_width": "70%",
+    }
+
+    config = build_session_config(str(simple_dir))
+
+    # Check that the custom dimensions are used
+    assert config["windows"][0]["options"]["main-pane-width"] == "70%"
+
+
+def test_horizontal_layout_uses_pane_height(simple_dir, mock_global_config):
+    """Test that horizontal layouts use main-pane-height."""
+    # Set the mock to return a horizontal layout
+    mock_global_config.return_value = {
+        "layout": "main-horizontal",
+        "main_pane_height": "75%",
+    }
+
+    config = build_session_config(str(simple_dir))
+
+    # Check that main-pane-height is used for horizontal layout
+    assert config["windows"][0]["layout"] == "main-horizontal"
+    assert config["windows"][0]["options"]["main-pane-height"] == "75%"
+    assert "main-pane-width" not in config["windows"][0]["options"]
