@@ -1,6 +1,16 @@
 colorama==0.4.6
+iniconfig==2.0.0
 libtmux==0.46.0
+markdown-it-py==3.0.0
+mdurl==0.1.2
+packaging==24.2
+pluggy==1.5.0
+pprintpp==0.4.0
+Pygments==2.19.1
+pytest==8.3.5
+pytest-clarity==1.0.1
 PyYAML==6.0.2
+rich==13.9.4
 tmuxp==1.55.0
 toml==0.10.2
-typing-extensions>=4.0.0
+typing_extensions==4.12.2
