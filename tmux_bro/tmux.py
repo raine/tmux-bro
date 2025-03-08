@@ -24,7 +24,7 @@ def build_session_config(directory):
 
             if has_dev:
                 if pkg_manager == "npm":
-                    panes.insert(1, {"shell_command": [{"cmd": "pnpm run dev"}]})
+                    panes.insert(1, {"shell_command": [{"cmd": "npm run dev"}]})
                 else:
                     panes.insert(1, {"shell_command": [{"cmd": f"{pkg_manager} dev"}]})
 
