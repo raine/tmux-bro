@@ -59,19 +59,14 @@ tmux-bro uses two approaches to discover your projects:
    it to find your accessed directories and feed them to fzf. This leverages
    your existing navigation habits without requiring additional configuration.
 
-2. **TMUX_BRO_PROJECTS_DIR** (fallback): If zoxide is not available, tmux-bro
+2. **Global config** (fallback): If zoxide is not available, tmux-bro
    will look for projects in the directory specified by the
-   `TMUX_BRO_PROJECTS_DIR` environment variable. You should set this to the
-   root directory where you keep your projects:
+   `projects_dir` setting in your global config file. Create a config file at
+   `~/.config/tmux-bro.yaml` with the following content:
 
-   ```sh
-   # Add to your .bashrc, .zshenv, etc.
-   export TMUX_BRO_PROJECTS_DIR="$HOME/projects"
+   ```yaml
+   projects_dir: "/path/to/your/projects"
    ```
-
-   Note that tmux won't pick up that immediately in popups. You need to run
-   `tmux set-environment -g TMUX_BRO_PROJECTS_DIR "$TMUX_BRO_PROJECTS_DIR"` or
-   restart tmux.
 
 Both approaches integrate with fzf to provide a fast fuzzy-search interface for selecting projects.
 
@@ -90,13 +85,14 @@ This will:
 As of now, there is not much configuration — it's designed to adapt to
 your workflow out of the box. I've built this tool for my own use, and my usage
 patterns will shape whether configuration options are needed in the future. For
-now, it relies on sensible defaults and the following environment variables to
-customize behavior:
+now, it relies on sensible defaults and the following:
 
-- **`EDITOR`**: Specifies your preferred editor (e.g., `vim`, `nvim`, or `code`).
-- **`TMUX_BRO_PROJECTS_DIR`**: Defines the fallback directory for project
-  discovery if [zoxide](https://github.com/ajeetdsouza/zoxide) isn’t installed.
-  Set this to where you store your projects (e.g., `$HOME/projects`).
+- **`EDITOR`** environment variable: Specifies your preferred editor (e.g., `vim`,
+`nvim`, or `code`).
+- **Global config file** at `~/.config/tmux-bro.yaml` with the following options:
+  - `projects_dir`: Defines the fallback directory for project discovery if
+    [zoxide](https://github.com/ajeetdsouza/zoxide) isn't installed.
+    Set this to where you store your projects (e.g., `$HOME/projects`).
 
 If my own needs evolve — or compelling feedback is given — more customization
 options might be added later. For now, it’s lean and opinionated by design.

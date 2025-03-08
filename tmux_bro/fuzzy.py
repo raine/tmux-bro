@@ -1,11 +1,11 @@
 import subprocess
-import os
+from .config import load_global_config
 
 
 def run_fuzzy_finder():
     """
     Run zoxide with fzf to select a directory.
-    If zoxide is not installed, use $TMUX_BRO_PROJECTS_DIR as fallback.
+    If zoxide is not installed, use projects_dir from config as fallback.
     """
     try:
         # Check for fzf dependency
@@ -25,11 +25,12 @@ def run_fuzzy_finder():
                 text=True,
             )
         except (subprocess.SubprocessError, FileNotFoundError):
-            # Use TMUX_BRO_PROJECTS_DIR as fallback
-            projects_dir = os.environ.get("TMUX_BRO_PROJECTS_DIR")
+            # Use projects_dir from config as fallback
+            config = load_global_config()
+            projects_dir = config.get("projects_dir")
             if not projects_dir:
                 print(
-                    "Error: zoxide is not installed or TMUX_BRO_PROJECTS_DIR is not set"
+                    "Error: zoxide is not installed and projects_dir is not set in ~/.config/tmux-bro.yaml"
                 )
                 input("Press Enter to continue...")
                 return None
