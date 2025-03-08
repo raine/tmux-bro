@@ -19,7 +19,10 @@ def run_fuzzy_finder():
         # Try to use zoxide if available
         try:
             process = subprocess.Popen(
-                "zoxide query -l | fzf", shell=True, stdout=subprocess.PIPE, text=True
+                "zoxide query -l | fzf",
+                shell=True,
+                stdout=subprocess.PIPE,
+                text=True,
             )
         except (subprocess.SubprocessError, FileNotFoundError):
             # Use TMUX_BRO_PROJECTS_DIR as fallback

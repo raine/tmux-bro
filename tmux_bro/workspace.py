@@ -12,7 +12,11 @@ def detect_workspace(directory: str) -> Optional[List[str]]:
     Returns a list of package directories if it's a workspace, None otherwise
     """
     # Try each workspace type in order
-    detectors = [detect_pnpm_workspace, detect_npm_workspace, detect_cargo_workspace]
+    detectors = [
+        detect_pnpm_workspace,
+        detect_npm_workspace,
+        detect_cargo_workspace,
+    ]
 
     for detector in detectors:
         package_dirs = detector(directory)
