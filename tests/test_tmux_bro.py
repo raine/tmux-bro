@@ -142,6 +142,44 @@ def cargo_workspace_dir(tmp_path):
     return workspace_dir
 
 
+@pytest.fixture
+def npm_project_dir(tmp_path):
+    """Create a fixture for a single npm project with dev script."""
+    project_dir = tmp_path / "npm-project"
+    project_dir.mkdir()
+
+    # Create package.json with dev script
+    package_json = project_dir / "package.json"
+    package_json.write_text(
+        json.dumps(
+            {"name": "npm-project", "version": "1.0.0", "scripts": {"dev": "vite"}}
+        )
+    )
+
+    # Create package-lock.json
+    lock_file = project_dir / "package-lock.json"
+    lock_file.write_text("{}")
+
+    return project_dir
+
+
+@pytest.fixture
+def npm_project_dir_no_dev_script(tmp_path):
+    """Create a fixture for a single npm project with dev script."""
+    project_dir = tmp_path / "npm-project"
+    project_dir.mkdir()
+
+    # Create package.json with dev script
+    package_json = project_dir / "package.json"
+    package_json.write_text(json.dumps({"name": "npm-project", "version": "1.0.0"}))
+
+    # Create package-lock.json
+    lock_file = project_dir / "package-lock.json"
+    lock_file.write_text("{}")
+
+    return project_dir
+
+
 def test_simple_directory(simple_dir):
     """Test configuration for a simple directory without workspace."""
     config = build_session_config(str(simple_dir))
@@ -290,6 +328,51 @@ def test_cargo_workspace(cargo_workspace_dir):
                     {"shell_command": []},
                 ],
             },
+        ],
+    }
+
+    assert expected == config
+
+
+def test_npm_project(npm_project_dir):
+    """Test configuration for a single npm project with dev script."""
+    config = build_session_config(str(npm_project_dir))
+
+    expected = {
+        "session_name": "npm-project",
+        "windows": [
+            {
+                "layout": "main-vertical",
+                "start_directory": str(npm_project_dir),
+                "options": {"main-pane-width": "50%"},
+                "panes": [
+                    {"shell_command": [{"cmd": "vim"}]},
+                    {"shell_command": [{"cmd": "npm run dev"}]},
+                    {"shell_command": []},
+                ],
+            }
+        ],
+    }
+
+    assert expected == config
+
+
+def test_npm_project_no_dev_script(npm_project_dir_no_dev_script):
+    """Test configuration for a single npm project with dev script."""
+    config = build_session_config(str(npm_project_dir_no_dev_script))
+
+    expected = {
+        "session_name": "npm-project",
+        "windows": [
+            {
+                "layout": "main-vertical",
+                "start_directory": str(npm_project_dir_no_dev_script),
+                "options": {"main-pane-width": "50%"},
+                "panes": [
+                    {"shell_command": [{"cmd": "vim"}]},
+                    {"shell_command": []},
+                ],
+            }
         ],
     }
 
