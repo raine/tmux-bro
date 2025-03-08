@@ -82,11 +82,6 @@ This will:
 
 ## configuration
 
-As of now, there is not much configuration — it's designed to adapt to
-your workflow out of the box. I've built this tool for my own use, and my usage
-patterns will shape whether configuration options are needed in the future. For
-now, it relies on sensible defaults and the following:
-
 - **`EDITOR`** environment variable: Specifies your preferred editor (e.g., `vim`,
   `nvim`, or `code`).
 - **Global config file** at `~/.config/tmux-bro.yaml` with the following options:
