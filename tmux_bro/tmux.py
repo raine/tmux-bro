@@ -1,8 +1,12 @@
 from libtmux import Server
 from tmuxp.workspace.builder import WorkspaceBuilder
 import os
-from .workspace import detect_workspace, has_dev_script, detect_package_manager
-from .config import load_global_config
+from .workspace import (
+    detect_workspace,
+    has_package_json_dev_script,
+    detect_package_manager,
+)
+from .config import load_global_config, load_project_config
 
 
 def _get_venv_source_cmd(directory):
@@ -32,14 +36,16 @@ def _create_shell_pane(directory):
     return {"shell_command": commands}
 
 
-def _create_dev_pane(directory, pkg_manager):
+def _create_dev_pane(directory, pkg_manager, dev_command=None):
     """Create dev script pane with appropriate command."""
     commands = []
     venv_cmd = _get_venv_source_cmd(directory)
     if venv_cmd:
         commands.append(venv_cmd)
 
-    if pkg_manager == "npm":
+    if dev_command:
+        commands.append({"cmd": dev_command})
+    elif pkg_manager == "npm":
         commands.append({"cmd": "npm run dev"})
     else:
         commands.append({"cmd": f"{pkg_manager} dev"})
@@ -89,13 +95,32 @@ def build_session_config(directory):
     package_dirs = detect_workspace(directory)
     pkg_manager = detect_package_manager(directory)
 
+    project_config = load_project_config(directory)
+    default_dev_command = project_config.get("dev_command")
+    package_configs = project_config.get("packages", {})
+
     windows = []
 
     if package_dirs:
         # Multi-package workspace
         for package_dir in package_dirs:
             package_name = os.path.basename(package_dir)
-            has_dev = has_dev_script(package_dir)
+
+            # Check for package-specific dev command override
+            package_dev_command = None
+            if (
+                package_name in package_configs
+                and "dev_command" in package_configs[package_name]
+            ):
+                package_dev_command = package_configs[package_name]["dev_command"]
+            else:
+                package_dev_command = default_dev_command
+
+            # Add dev pane if package has dev script or if dev command is specified in config
+            has_dev = (
+                has_package_json_dev_script(package_dir)
+                or package_dev_command is not None
+            )
 
             panes = [
                 _create_editor_pane(package_dir, editor),
@@ -103,14 +128,18 @@ def build_session_config(directory):
             ]
 
             if has_dev:
-                panes.insert(1, _create_dev_pane(package_dir, pkg_manager))
+                panes.insert(
+                    1, _create_dev_pane(package_dir, pkg_manager, package_dev_command)
+                )
 
             window = _create_window_config(package_dir, package_name)
             window["panes"] = panes
             windows.append(window)
     else:
         # Single directory
-        has_dev = has_dev_script(directory)
+        has_dev = (
+            has_package_json_dev_script(directory) or default_dev_command is not None
+        )
 
         panes = [
             _create_editor_pane(directory, editor),
@@ -118,7 +147,9 @@ def build_session_config(directory):
         ]
 
         if has_dev:
-            panes.insert(1, _create_dev_pane(directory, pkg_manager))
+            panes.insert(
+                1, _create_dev_pane(directory, pkg_manager, default_dev_command)
+            )
 
         window = _create_window_config(directory)
         window["panes"] = panes

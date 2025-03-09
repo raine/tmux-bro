@@ -190,6 +190,98 @@ def npm_project_dir_no_dev_script(tmp_path):
     return project_dir
 
 
+@pytest.fixture
+def npm_project_with_dev_override(tmp_path):
+    """Create a fixture for a single npm project with a dev script and a .tmux-bro.yaml config."""
+    project_dir = tmp_path / "npm-project-custom"
+    project_dir.mkdir()
+
+    # Create package.json with dev script
+    package_json = project_dir / "package.json"
+    package_json.write_text(
+        '{"name": "npm-project-custom", "version": "1.0.0", "scripts": {"dev": "vite"}}'
+    )
+
+    # Create package-lock.json
+    lock_file = project_dir / "package-lock.json"
+    lock_file.write_text("{}")
+
+    # Create .tmux-bro.yaml with dev command override
+    config_file = project_dir / ".tmux-bro.yaml"
+    config_file.write_text(yaml.dump({"dev_command": "hello world"}))
+
+    return project_dir
+
+
+@pytest.fixture
+def npm_workspace_with_overrides(tmp_path):
+    """Create a fixture npm workspace with custom dev commands."""
+    workspace_dir = tmp_path / "npm-workspace-custom"
+    workspace_dir.mkdir()
+
+    # Create root package.json
+    package_json = workspace_dir / "package.json"
+    package_json.write_text(
+        '{"name": "workspace-root-custom", "workspaces": ["packages/*"]}'
+    )
+
+    # Create package-lock.json
+    lock_file = workspace_dir / "package-lock.json"
+    lock_file.write_text("{}")
+
+    # Create packages directory with two packages
+    packages_dir = workspace_dir / "packages"
+    packages_dir.mkdir()
+
+    # Package 1 with dev script
+    pkg1_dir = packages_dir / "pkg1"
+    pkg1_dir.mkdir()
+    pkg1_json = pkg1_dir / "package.json"
+    pkg1_json.write_text('{"name": "pkg1", "scripts": {"dev": "vite"}}')
+
+    # Package 2 without dev script
+    pkg2_dir = packages_dir / "pkg2"
+    pkg2_dir.mkdir()
+    pkg2_json = pkg2_dir / "package.json"
+    pkg2_json.write_text('{"name": "pkg2", "scripts": {"dev": "vite"}}')
+
+    # Create .tmux-bro.yaml with dev command overrides
+    config_file = workspace_dir / ".tmux-bro.yaml"
+    config_file.write_text(
+        yaml.dump(
+            {
+                "dev_command": "npm run start:dev",
+                "packages": {"pkg1": {"dev_command": "npm run custom-dev:pkg1"}},
+            }
+        )
+    )
+
+    return workspace_dir
+
+
+@pytest.fixture
+def npm_project_no_dev_script_with_override(tmp_path):
+    """Create a fixture for a single npm project without dev script but with dev_command in config."""
+    project_dir = tmp_path / "npm-project-no-dev"
+    project_dir.mkdir()
+
+    # Create package.json without dev script
+    package_json = project_dir / "package.json"
+    package_json.write_text(
+        json.dumps({"name": "npm-project-no-dev", "version": "1.0.0"})
+    )
+
+    # Create package-lock.json
+    lock_file = project_dir / "package-lock.json"
+    lock_file.write_text("{}")
+
+    # Create .tmux-bro.yaml with dev command override
+    config_file = project_dir / ".tmux-bro.yaml"
+    config_file.write_text(yaml.dump({"dev_command": "hello world"}))
+
+    return project_dir
+
+
 def test_simple_directory(simple_dir):
     """Test configuration for a simple directory without workspace."""
     config = build_session_config(str(simple_dir))
@@ -389,6 +481,32 @@ def test_npm_project_no_dev_script(npm_project_dir_no_dev_script):
     assert expected == config
 
 
+def test_npm_project_no_dev_script_with_override(
+    npm_project_no_dev_script_with_override,
+):
+    """Test configuration for a single npm project without dev script but with dev_command in config."""
+    with patch("tmux_bro.git.get_git_root", return_value=None):
+        config = build_session_config(str(npm_project_no_dev_script_with_override))
+
+    expected = {
+        "session_name": "npm-project-no-dev",
+        "windows": [
+            {
+                "layout": "main-vertical",
+                "start_directory": str(npm_project_no_dev_script_with_override),
+                "options": {"main-pane-width": "50%"},
+                "panes": [
+                    {"shell_command": [{"cmd": "vim"}]},
+                    {"shell_command": [{"cmd": "hello world"}]},
+                    {"shell_command": []},
+                ],
+            }
+        ],
+    }
+
+    assert expected == config
+
+
 def test_custom_layout_from_config(simple_dir, mock_global_config):
     """Test that layout is read from global config if it exists."""
     # Set the mock to return a custom layout
@@ -435,3 +553,36 @@ def test_horizontal_layout_uses_pane_height(simple_dir, mock_global_config):
     assert config["windows"][0]["layout"] == "main-horizontal"
     assert config["windows"][0]["options"]["main-pane-height"] == "75%"
     assert "main-pane-width" not in config["windows"][0]["options"]
+
+
+def test_project_specific_dev_command(npm_project_with_dev_override):
+    """Test that project-specific dev command override is applied."""
+    with patch("tmux_bro.git.get_git_root", return_value=None):
+        config = build_session_config(str(npm_project_with_dev_override))
+
+    expected_dev_cmd = "hello world"
+    actual_dev_cmd = config["windows"][0]["panes"][1]["shell_command"][0]["cmd"]
+
+    assert actual_dev_cmd == expected_dev_cmd
+
+
+def test_workspace_specific_dev_commands(npm_workspace_with_overrides):
+    """Test that workspace-specific dev command overrides are applied correctly."""
+    with patch("tmux_bro.git.get_git_root", return_value=None):
+        config = build_session_config(str(npm_workspace_with_overrides))
+
+    # Verify pkg1 uses its specific override
+    pkg1_window = next(
+        (w for w in config["windows"] if w["window_name"] == "pkg1"), None
+    )
+    assert pkg1_window is not None
+    pkg1_dev_cmd = pkg1_window["panes"][1]["shell_command"][0]["cmd"]
+    assert pkg1_dev_cmd == "npm run custom-dev:pkg1"
+
+    # Verify pkg2 uses the default override
+    pkg2_window = next(
+        (w for w in config["windows"] if w["window_name"] == "pkg2"), None
+    )
+    assert pkg2_window is not None
+    pkg2_dev_cmd = pkg2_window["panes"][1]["shell_command"][0]["cmd"]
+    assert pkg2_dev_cmd == "npm run start:dev"

@@ -151,7 +151,7 @@ def has_cargo_toml(directory: str) -> bool:
     return os.path.isfile(os.path.join(directory, "Cargo.toml"))
 
 
-def has_dev_script(package_dir: str) -> bool:
+def has_package_json_dev_script(package_dir: str) -> bool:
     """
     Check if the package.json in the given directory has a 'dev' script
     """
