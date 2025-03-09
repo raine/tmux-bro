@@ -96,9 +96,6 @@ This will:
   - `main_pane_width`: Sets the width of the main pane for vertical layouts (default: "50%").
   - `main_pane_height`: Sets the height of the main pane for horizontal layouts (default: "50%").
 
-If my own needs evolve — or compelling feedback is given — more customization
-options might be added later. For now, it’s lean and opinionated by design.
-
 ### project-specific
 
 You can override tmux-bro settings on a per-project basis by creating a `.tmux-bro.yaml` file in your project root:
@@ -107,11 +104,19 @@ You can override tmux-bro settings on a per-project basis by creating a `.tmux-b
 # override the default 'dev' command for all packages
 dev_command: "npm run start:dev"
 
+# override layout and pane dimensions
+layout: "main-horizontal"
+main_pane_height: "60%"
+main_pane_width: "60%"
+
 # package-specific overrides (for workspaces)
 packages:
   package-name:
     dev_command: "npm run custom-dev"
 ```
+
+If my own needs evolve — or compelling feedback is given — more customization
+options might be added later. For now, it’s lean and opinionated by design.
 
 ## example
 

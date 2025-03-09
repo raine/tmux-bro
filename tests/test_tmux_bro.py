@@ -245,12 +245,14 @@ def npm_workspace_with_overrides(tmp_path):
     pkg2_json = pkg2_dir / "package.json"
     pkg2_json.write_text('{"name": "pkg2", "scripts": {"dev": "vite"}}')
 
-    # Create .tmux-bro.yaml with dev command overrides
+    # Create .tmux-bro.yaml with dev command overrides and layout settings
     config_file = workspace_dir / ".tmux-bro.yaml"
     config_file.write_text(
         yaml.dump(
             {
                 "dev_command": "npm run start:dev",
+                "layout": "main-horizontal",
+                "main_pane_height": "65%",
                 "packages": {"pkg1": {"dev_command": "npm run custom-dev:pkg1"}},
             }
         )
@@ -566,9 +568,30 @@ def test_project_specific_dev_command(npm_project_with_dev_override):
     assert actual_dev_cmd == expected_dev_cmd
 
 
+def test_project_specific_layout(tmp_path):
+    """Test that project-specific layout override is applied."""
+    project_dir = tmp_path / "layout-test"
+    project_dir.mkdir()
+
+    # Create .tmux-bro.yaml with layout override
+    config_file = project_dir / ".tmux-bro.yaml"
+    config_file.write_text(
+        yaml.dump({"layout": "main-horizontal", "main_pane_height": "75%"})
+    )
+
+    with patch("tmux_bro.git.get_git_root", return_value=None):
+        config = build_session_config(str(project_dir))
+
+    # Check that project-specific layout is used
+    assert config["windows"][0]["layout"] == "main-horizontal"
+    assert config["windows"][0]["options"]["main-pane-height"] == "75%"
+
+
 def test_workspace_specific_dev_commands(npm_workspace_with_overrides):
     """Test that workspace-specific dev command overrides are applied correctly."""
-    with patch("tmux_bro.git.get_git_root", return_value=None):
+    with patch(
+        "tmux_bro.git.get_git_root", return_value=str(npm_workspace_with_overrides)
+    ):
         config = build_session_config(str(npm_workspace_with_overrides))
 
     # Verify pkg1 uses its specific override
@@ -586,3 +609,17 @@ def test_workspace_specific_dev_commands(npm_workspace_with_overrides):
     assert pkg2_window is not None
     pkg2_dev_cmd = pkg2_window["panes"][1]["shell_command"][0]["cmd"]
     assert pkg2_dev_cmd == "npm run start:dev"
+
+
+def test_workspace_layout_settings(npm_workspace_with_overrides):
+    """Test that workspace layout settings are applied to all windows."""
+    with patch(
+        "tmux_bro.git.get_git_root", return_value=str(npm_workspace_with_overrides)
+    ):
+        config = build_session_config(str(npm_workspace_with_overrides))
+
+    # Verify all windows use the project-specific layout settings
+    for window in config["windows"]:
+        assert window["layout"] == "main-horizontal"
+        assert window["options"]["main-pane-height"] == "65%"
+        assert "main-pane-width" not in window["options"]

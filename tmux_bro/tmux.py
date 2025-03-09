@@ -61,11 +61,16 @@ DEFAULT_MAIN_PANE_HEIGHT = "50%"
 def _create_window_config(directory, window_name=None):
     """Create a standard window configuration."""
     global_config = load_global_config()
+    project_config = load_project_config(directory)
 
-    # Get layout and pane dimensions from config or use defaults
-    layout = global_config.get("layout", DEFAULT_LAYOUT)
-    main_pane_width = global_config.get("main_pane_width", DEFAULT_MAIN_PANE_WIDTH)
-    main_pane_height = global_config.get("main_pane_height", DEFAULT_MAIN_PANE_HEIGHT)
+    # Get layout and pane dimensions from project config, global config, or use defaults
+    layout = project_config.get("layout", global_config.get("layout", DEFAULT_LAYOUT))
+    main_pane_width = project_config.get(
+        "main_pane_width", global_config.get("main_pane_width", DEFAULT_MAIN_PANE_WIDTH)
+    )
+    main_pane_height = project_config.get(
+        "main_pane_height", global_config.get("main_pane_height", DEFAULT_MAIN_PANE_HEIGHT)
+    )
 
     # Set options based on layout type
     options = {}
