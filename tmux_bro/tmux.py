@@ -69,7 +69,8 @@ def _create_window_config(directory, window_name=None):
         "main_pane_width", global_config.get("main_pane_width", DEFAULT_MAIN_PANE_WIDTH)
     )
     main_pane_height = project_config.get(
-        "main_pane_height", global_config.get("main_pane_height", DEFAULT_MAIN_PANE_HEIGHT)
+        "main_pane_height",
+        global_config.get("main_pane_height", DEFAULT_MAIN_PANE_HEIGHT),
     )
 
     # Set options based on layout type
@@ -86,6 +87,7 @@ def _create_window_config(directory, window_name=None):
         "layout": layout,
         "start_directory": directory,
         "options": options,
+        "suppress_history": False,
     }
 
     if window_name is not None:

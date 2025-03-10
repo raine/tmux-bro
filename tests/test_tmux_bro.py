@@ -294,6 +294,7 @@ def test_simple_directory(simple_dir):
                 "layout": "main-vertical",
                 "start_directory": str(simple_dir),
                 "options": {"main-pane-width": "50%"},
+                "suppress_history": False,
                 "panes": [
                     {"shell_command": [{"cmd": "vim"}]},
                     {"shell_command": []},
@@ -317,6 +318,7 @@ def test_python_venv_directory(python_venv_dir):
                 "layout": "main-vertical",
                 "start_directory": str(python_venv_dir),
                 "options": {"main-pane-width": "50%"},
+                "suppress_history": False,
                 "panes": [
                     {"shell_command": [{"cmd": f"source {venv_path}"}, {"cmd": "vim"}]},
                     {"shell_command": [{"cmd": f"source {venv_path}"}]},
@@ -343,6 +345,7 @@ def test_npm_workspace(npm_workspace_dir):
                 "layout": "main-vertical",
                 "start_directory": pkg2_path,
                 "options": {"main-pane-width": "50%"},
+                "suppress_history": False,
                 "panes": [
                     {"shell_command": [{"cmd": "vim"}]},
                     {"shell_command": []},
@@ -353,6 +356,7 @@ def test_npm_workspace(npm_workspace_dir):
                 "layout": "main-vertical",
                 "start_directory": pkg1_path,
                 "options": {"main-pane-width": "50%"},
+                "suppress_history": False,
                 "panes": [
                     {"shell_command": [{"cmd": "vim"}]},
                     {"shell_command": [{"cmd": "npm run dev"}]},
@@ -380,6 +384,7 @@ def test_pnpm_workspace(pnpm_workspace_dir):
                 "layout": "main-vertical",
                 "start_directory": pkg2_path,
                 "options": {"main-pane-width": "50%"},
+                "suppress_history": False,
                 "panes": [
                     {"shell_command": [{"cmd": "vim"}]},
                     {"shell_command": []},
@@ -390,6 +395,7 @@ def test_pnpm_workspace(pnpm_workspace_dir):
                 "layout": "main-vertical",
                 "start_directory": pkg1_path,
                 "options": {"main-pane-width": "50%"},
+                "suppress_history": False,
                 "panes": [
                     {"shell_command": [{"cmd": "vim"}]},
                     {"shell_command": [{"cmd": "pnpm dev"}]},
@@ -417,6 +423,7 @@ def test_cargo_workspace(cargo_workspace_dir):
                 "layout": "main-vertical",
                 "start_directory": crate1_path,
                 "options": {"main-pane-width": "50%"},
+                "suppress_history": False,
                 "panes": [
                     {"shell_command": [{"cmd": "vim"}]},
                     {"shell_command": []},
@@ -427,6 +434,7 @@ def test_cargo_workspace(cargo_workspace_dir):
                 "layout": "main-vertical",
                 "start_directory": crate2_path,
                 "options": {"main-pane-width": "50%"},
+                "suppress_history": False,
                 "panes": [
                     {"shell_command": [{"cmd": "vim"}]},
                     {"shell_command": []},
@@ -449,6 +457,7 @@ def test_npm_project(npm_project_dir):
                 "layout": "main-vertical",
                 "start_directory": str(npm_project_dir),
                 "options": {"main-pane-width": "50%"},
+                "suppress_history": False,
                 "panes": [
                     {"shell_command": [{"cmd": "vim"}]},
                     {"shell_command": [{"cmd": "npm run dev"}]},
@@ -472,6 +481,7 @@ def test_npm_project_no_dev_script(npm_project_dir_no_dev_script):
                 "layout": "main-vertical",
                 "start_directory": str(npm_project_dir_no_dev_script),
                 "options": {"main-pane-width": "50%"},
+                "suppress_history": False,
                 "panes": [
                     {"shell_command": [{"cmd": "vim"}]},
                     {"shell_command": []},
@@ -497,6 +507,7 @@ def test_npm_project_no_dev_script_with_override(
                 "layout": "main-vertical",
                 "start_directory": str(npm_project_no_dev_script_with_override),
                 "options": {"main-pane-width": "50%"},
+                "suppress_history": False,
                 "panes": [
                     {"shell_command": [{"cmd": "vim"}]},
                     {"shell_command": [{"cmd": "hello world"}]},
