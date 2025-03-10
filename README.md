@@ -82,6 +82,11 @@ This will:
 
 ## configuration
 
+> [!NOTE]  
+> tmux-bro is designed to work with zero configuration. The tool aims
+> to intelligently detect your project type and set up appropriate layouts
+> automatically.
+
 ### global
 
 - **`EDITOR`** environment variable: Specifies your preferred editor (e.g., `vim`,
@@ -117,6 +122,10 @@ packages:
 
 If my own needs evolve — or compelling feedback is given — more customization
 options might be added later. For now, it’s lean and opinionated by design.
+
+## demo
+
+![Image](https://github.com/user-attachments/assets/a029333d-299f-4942-9b8d-13682a1886fa)
 
 ## example
 
