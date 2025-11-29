@@ -142,6 +142,8 @@ When used with a npm monorepo, tmux bro will:
 
 MIT
 
-## see also
+## Related projects
 
-- [tmux-inspect](https://github.com/raine/tmux-inspect)
+- [workmux](https://github.com/raine/workmux) — Git worktrees + tmux windows for parallel AI agent workflows
+- [tmux-file-picker](https://github.com/raine/tmux-file-picker) — Pop up fzf in tmux to quickly insert file paths, perfect for AI coding assistants
+- [tmux-inspect](https://github.com/raine/tmux-inspect) — Inspect objects in tmux popups using jless
